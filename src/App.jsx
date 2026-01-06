@@ -2,21 +2,31 @@ import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { 
   ChevronDown, 
   ChevronRight,
+  ChevronUp,
+  AlertCircle, 
   CheckCircle2, 
   Clock, 
   RotateCcw,
+  BarChart3,
   Search,
   MapPin,
   Building2,
+  FileText,
   Star,
+  Image as ImageIcon,
   Smile,
   AlertTriangle,
+  Calendar,
+  History,
+  ShieldCheck,
   Eye,
   ThumbsUp,
-  LayoutDashboard,
-  ListFilter,
+  Filter,
+  X,
   Layers,
   MessageCircle,
+  LayoutDashboard,
+  ListFilter,
   CheckSquare,
   Square
 } from 'lucide-react';
@@ -272,6 +282,9 @@ export default function App() {
   const [selectedDepartments, setSelectedDepartments] = useState(STANDARD_DEPARTMENTS);
   const [viewMode, setViewMode] = useState('all'); 
   const [specificDistrict, setSpecificDistrict] = useState(DISTRICT_NAMES[0]);
+  
+  // New State for Mobile Filter Toggle
+  const [isFiltersVisible, setIsFiltersVisible] = useState(false);
 
   const dateLabels = useMemo(() => {
     const today = new Date();
@@ -442,13 +455,24 @@ export default function App() {
         </div>
       </header>
 
-      <section className="bg-white border-b border-slate-200 shadow-sm pt-6 pb-8">
-         <div className="max-w-7xl mx-auto px-4">
-            <div className="flex items-center gap-2 mb-5 text-base font-bold text-slate-800">
-               <ListFilter size={20} className="text-indigo-600" /> ตัวกรองข้อมูล (Filters)
+      <section className="bg-white border-b border-slate-200 shadow-sm">
+         <div className="max-w-7xl mx-auto px-4 py-4 sm:py-6">
+            <div className="flex items-center justify-between mb-0 sm:mb-5">
+                <div className="flex items-center gap-2 text-base font-bold text-slate-800">
+                    <ListFilter size={20} className="text-indigo-600" /> ตัวกรองข้อมูล (Filters)
+                </div>
+                {/* Toggle Button for Mobile */}
+                <button 
+                    onClick={() => setIsFiltersVisible(!isFiltersVisible)}
+                    className="sm:hidden flex items-center gap-2 px-4 py-2 text-sm bg-slate-100 text-slate-700 rounded-lg font-medium"
+                >
+                    {isFiltersVisible ? 'ซ่อนตัวกรอง' : 'แสดงตัวกรอง'} 
+                    {isFiltersVisible ? <ChevronUp size={16}/> : <ChevronDown size={16}/>}
+                </button>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-4">
+            {/* Conditional Rendering for Filters */}
+            <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-4 ${isFiltersVisible ? 'block mt-4' : 'hidden sm:grid'}`}>
                <div className="lg:col-span-4">
                   <label className="block text-sm text-slate-600 font-medium mb-1.5">ช่วงเวลา</label>
                   <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-200">
@@ -557,6 +581,7 @@ export default function App() {
                                 district={district} 
                                 statType={statType} 
                                 theme={theme}
+                                viewMode="all"
                                 sortIssues={sortIssues}
                             />
                         ))
@@ -588,6 +613,7 @@ const EmptyState = () => (
 );
 
 const SingleDistrictView = ({ district, sortIssues }) => {
+    // Aggregate Metrics
     const metrics = useMemo(() => {
         let totalIssues = 0;
         let completed = 0;
@@ -733,6 +759,7 @@ const DepartmentFullRow = ({ dept, sortIssues }) => {
 
             {isExpanded && (
                 <div className="bg-slate-50 border-t border-slate-100 p-6">
+                    {/* Reuse Issue Grid but show ALL info */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                         {sortIssues(dept.issues).map(issue => (
                             <IssueCard key={issue.id} issue={issue} statType="all" theme={{color:'text-slate-600'}} />
@@ -747,6 +774,7 @@ const DepartmentFullRow = ({ dept, sortIssues }) => {
 const DistrictCard = ({ district, statType, theme, sortIssues }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   
+  // Reuse existing logic from previous step, but simplified for brevity
   const stats = useMemo(() => {
     let targetValue = 0; let subValue = ""; let leftSubtitle = null;
     let totalIssues = 0;
@@ -774,7 +802,7 @@ const DistrictCard = ({ district, statType, theme, sortIssues }) => {
 
     if(statType === 'satisfaction') {
         targetValue = count > 0 ? (val/count).toFixed(1) : "0.0";
-        subValue = <div className="flex text-yellow-400 gap-0.5 justify-end">{[...Array(5)].map((_,i)=><Star key={i} size={14} fill={i<Math.round(Number(targetValue))?"currentColor":"none"} className={i<Math.round(Number(targetValue))?"":"text-slate-200"}/>)}</div>;
+        subValue = <div className="flex text-yellow-400 gap-0.5 justify-center sm:justify-end">{[...Array(5)].map((_,i)=><Star key={i} size={14} fill={i<Math.round(Number(targetValue))?"currentColor":"none"} className={i<Math.round(Number(targetValue))?"":"text-slate-200"}/>)}</div>;
         
         const percentRated = totalCompleted > 0 ? ((totalRated / totalCompleted) * 100).toFixed(0) : 0;
         leftSubtitle = (
@@ -805,7 +833,7 @@ const DistrictCard = ({ district, statType, theme, sortIssues }) => {
     <div className={`bg-white rounded-2xl border transition-all duration-300 ${isExpanded ? `shadow-lg border-${theme.color.split('-')[1]}-200` : 'border-slate-200 shadow-sm hover:shadow-md'}`}>
       <div 
         onClick={() => setIsExpanded(!isExpanded)}
-        className="p-6 flex flex-col sm:flex-row sm:items-center justify-between cursor-pointer gap-4"
+        className="p-6 pb-14 flex flex-col sm:flex-row sm:items-center justify-between cursor-pointer gap-4 relative group"
       >
         <div className="flex items-center gap-5">
            <div className={`p-3.5 rounded-xl ${isExpanded ? theme.bg + ' ' + theme.color : 'bg-slate-100 text-slate-500'}`}>
@@ -816,15 +844,23 @@ const DistrictCard = ({ district, statType, theme, sortIssues }) => {
               {statType === 'satisfaction' && stats.leftSubtitle}
            </div>
         </div>
-        <div className="text-left sm:text-right pl-[68px] sm:pl-0">
-            <div className={`text-3xl font-bold ${theme.color} flex items-center sm:justify-end gap-1`}>
+        <div className="text-center sm:text-right w-full sm:w-auto">
+            <div className={`text-3xl font-bold ${theme.color} flex items-center justify-center sm:justify-end gap-1`}>
                 {stats.targetValue}
             </div>
             {stats.subValue}
         </div>
+        
+        {/* Desktop & Mobile Expansion Cue - Explicit Text (Always visible now) */}
+        <div className="absolute bottom-0 left-0 right-0 h-10 flex justify-center items-center bg-slate-50 border-t border-slate-100 rounded-b-2xl text-xs font-bold text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 transition-all gap-2">
+            {isExpanded ? "ย่อข้อมูล" : "ดูรายละเอียด 10 ฝ่ายงาน"} 
+            <div className="bg-white p-1 rounded-full border border-slate-200 shadow-sm group-hover:border-indigo-200">
+                 <ChevronDown size={14} className={`transform transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`} />
+            </div>
+        </div>
       </div>
       {isExpanded && (
-         <div className="border-t border-slate-100 bg-slate-50/50 p-6">
+         <div className="border-t border-slate-100 bg-slate-50/50 p-6 pt-8 pb-8">
             {district.departments.map(dept => (
                <DepartmentAccordion key={dept.id} dept={dept} statType={statType} theme={theme} sortIssues={sortIssues} />
             ))}
@@ -837,6 +873,7 @@ const DistrictCard = ({ district, statType, theme, sortIssues }) => {
 const DepartmentAccordion = ({ dept, statType, theme, sortIssues }) => {
     const [isExpanded, setIsExpanded] = useState(false);
     
+    // Calculate stats
     const stats = useMemo(() => {
         let value = 0; let subValue = null; let leftSubtitle = null; let isDisabled = false;
         const total = dept.issues.length;
@@ -852,8 +889,9 @@ const DepartmentAccordion = ({ dept, statType, theme, sortIssues }) => {
             const commentsCount = dept.issues.filter(i=>i.comment).length;
             if(rated.length === 0) isDisabled = true;
             value = rated.length > 0 ? (rated.reduce((a,b)=>a+b.rating,0)/rated.length).toFixed(1) : "0.0";
-            subValue = <div className="flex text-yellow-400 gap-0.5 sm:justify-end">{[...Array(5)].map((_,i)=><Star key={i} size={12} fill={i<Math.round(Number(value))?"currentColor":"none"} className={i<Math.round(Number(value))?"":"text-slate-200"}/>)}</div>;
+            subValue = <div className="flex text-yellow-400 gap-0.5 justify-center sm:justify-end">{[...Array(5)].map((_,i)=><Star key={i} size={12} fill={i<Math.round(Number(value))?"currentColor":"none"} className={i<Math.round(Number(value))?"":"text-slate-200"}/>)}</div>;
             
+            // Add left subtitle for Department Level satisfaction
             const percentRated = completed > 0 ? ((rated.length / completed) * 100).toFixed(0) : 0;
             leftSubtitle = (
                 <div className="flex flex-wrap items-center gap-2 mt-1 text-xs text-slate-500">
@@ -868,11 +906,13 @@ const DepartmentAccordion = ({ dept, statType, theme, sortIssues }) => {
                 </div>
             );
         } else {
+            // Default handlers for other types
             value = dept.issues.length;
         }
         return { value, subValue, leftSubtitle, isDisabled };
     }, [dept, statType]);
 
+    // Issues to show
     const visibleIssues = useMemo(() => {
         let issues = sortIssues(dept.issues);
         if(statType==='reopened') {
@@ -899,7 +939,7 @@ const DepartmentAccordion = ({ dept, statType, theme, sortIssues }) => {
                         {stats.leftSubtitle}
                     </div>
                 </div>
-                <div className="text-left sm:text-right pl-[52px] sm:pl-0 w-full sm:w-auto">
+                <div className="text-center sm:text-right w-full sm:w-auto">
                     <div className={`text-xl font-bold ${stats.isDisabled ? 'text-slate-400' : theme.color}`}>{stats.value}</div>
                     {stats.subValue}
                 </div>
@@ -918,12 +958,14 @@ const DepartmentAccordion = ({ dept, statType, theme, sortIssues }) => {
 };
 
 const IssueCard = ({ issue, statType, theme }) => {
+    
+    // Color scale helper for Satisfaction Stars
     const getStarColorClass = (rating) => {
-        if (rating >= 5) return "text-yellow-500 bg-yellow-50 border-yellow-100";
-        if (rating >= 4) return "text-green-500 bg-green-50 border-green-100";
-        if (rating >= 3) return "text-blue-500 bg-blue-50 border-blue-100";
-        if (rating >= 2) return "text-orange-500 bg-orange-50 border-orange-100";
-        return "text-red-500 bg-red-50 border-red-100";
+        if (rating >= 5) return "text-yellow-500 bg-yellow-50 border-yellow-100"; // Gold
+        if (rating >= 4) return "text-green-500 bg-green-50 border-green-100"; // Good
+        if (rating >= 3) return "text-blue-500 bg-blue-50 border-blue-100"; // OK
+        if (rating >= 2) return "text-orange-500 bg-orange-50 border-orange-100"; // Poor
+        return "text-red-500 bg-red-50 border-red-100"; // Very Poor
     };
 
     return (
