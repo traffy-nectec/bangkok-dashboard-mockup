@@ -1,16 +1,46 @@
-# React + Vite
+# React + Vite Project
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+โครงการนี้คือ **mockup สำหรับแสดง dashboard ข้อมูล Traffy Fondue ของ กทม. ในมิติต่างๆ**
 
-Currently, two official plugins are available:
+โครงการนี้เป็น React project ที่สร้างขึ้นด้วย Vite ซึ่งมีการตั้งค่าพื้นฐานสำหรับ React พร้อม Hot Module Replacement (HMR) และกฎ ESLint บางส่วน
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## วิธีการใช้งาน (Local Setup)
 
-## React Compiler
+หากต้องการใช้งานโปรเจกต์นี้บนเครื่องของคุณ ให้ทำตามขั้นตอนด้านล่าง:
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+1.  **โคลน Repository:**
+    เปิด Terminal หรือ Command Prompt แล้วใช้คำสั่ง:
+    ```bash
+    git clone <URL_ของ_Repository>
+    ```
+    (โปรดแทนที่ `<URL_ของ_Repository>` ด้วย URL จริงของ Git repository นี้)
 
-## Expanding the ESLint configuration
+2.  **เข้าสู่ Directory ของโปรเจกต์:**
+    ```bash
+    cd bangkok-dashboard-mockup
+    ```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+3.  **ติดตั้ง Dependencies:**
+    ติดตั้งแพ็คเกจที่จำเป็นทั้งหมดโดยใช้ npm:
+    ```bash
+    npm install
+    ```
+
+4.  **รัน Development Server:**
+    เริ่มเซิร์ฟเวอร์สำหรับการพัฒนา (Development Server) เพื่อดูแอปพลิเคชันของคุณในโหมดพัฒนา:
+    ```bash
+    npm run dev
+    ```
+    โดยปกติแล้ว แอปพลิเคชันจะเปิดขึ้นมาที่ `http://localhost:5173` (หรือพอร์ตอื่น ๆ ที่ระบุไว้)
+
+5.  **สร้าง Production Build:**
+    หากต้องการสร้างเวอร์ชันสำหรับ Production (Optimized และพร้อมสำหรับการ Deploy):
+    ```bash
+    npm run build
+    ```
+
+6.  **พรีวิว Production Build (ทางเลือก):**
+    หลังจากสร้าง Production Build แล้ว คุณสามารถพรีวิวเวอร์ชัน Production ได้:
+    ```bash
+    npm run preview
+    ```
